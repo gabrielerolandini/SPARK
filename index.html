@@ -4,14 +4,18 @@
   <meta charset="UTF-8">
   <title>Simulatore Gioco Carte</title>
   <link rel="stylesheet" href="stile.css">
+  <script src="https://kit.fontawesome.com/your_kit_id.js" crossorigin="anonymous"></script> 
+  <!-- (Sostituisci your_kit_id se serve un kit personale, altrimenti ti passo io un CDN pubblico) -->
 </head>
 <body>
 
   <!-- Sezione Mazzi in Alto -->
   <div class="mazzi-container">
     <div class="mazzo">
-      <div class="mazzo-titolo">Mazzo Principale</div>
-      <div class="mazzo-contatore" id="contatore-mazzo">Carte: 0</div>
+      <div class="mazzo-titolo">
+        Mazzo Principale
+        <div class="mazzo-counter" id="counter-mazzo">0</div>
+      </div>
       <div id="mazzo-container" class="mazzo-box"></div>
       <div class="mazzo-bottoni">
         <button onclick="pescaCarta()">Pesca</button>
@@ -20,8 +24,10 @@
     </div>
 
     <div class="mazzo">
-      <div class="mazzo-titolo">Mazzo Scarti</div>
-      <div class="mazzo-contatore" id="contatore-scarti">Carte: 0</div>
+      <div class="mazzo-titolo">
+        Mazzo Scarti
+        <div class="mazzo-counter" id="counter-scarti">0</div>
+      </div>
       <div id="scarti-container" class="mazzo-box"></div>
       <div class="mazzo-bottoni">
         <button onclick="ripristinaScarti()">Ripristina</button>
@@ -29,8 +35,10 @@
     </div>
 
     <div class="mazzo">
-      <div class="mazzo-titolo">Mazzo Minacce</div>
-      <div class="mazzo-contatore" id="contatore-minacce">Carte: 0</div>
+      <div class="mazzo-titolo">
+        Mazzo Minacce
+        <div class="mazzo-counter" id="counter-minacce">0</div>
+      </div>
       <div id="minacce-container" class="mazzo-box"></div>
       <div class="mazzo-bottoni">
         <button onclick="aggiungiMinaccia()">Aggiungi</button>
@@ -39,10 +47,10 @@
     </div>
   </div>
 
-  <!-- Sezione Area di Gioco -->
+  <!-- Area di Gioco -->
   <div id="area-gioco" class="area-gioco"></div>
 
-  <!-- Sezione Contatori -->
+  <!-- Contatori -->
   <div class="contatori-container">
     <div class="contatore">
       <div class="numeri-tracciato">
