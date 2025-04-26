@@ -4,12 +4,11 @@
   <meta charset="UTF-8">
   <title>Simulatore Gioco Carte</title>
   <link rel="stylesheet" href="stile.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
-  <!-- Sezione Mazzi in Alto -->
+  <!-- Sezione Mazzi -->
   <div class="mazzi-container">
     <div class="mazzo">
       <div class="mazzo-titolo">
@@ -48,7 +47,7 @@
   </div>
 
   <!-- Area di Gioco -->
-  <div id="area-gioco" class="area-gioco"></div>
+  <div id="area-gioco" class="area-gioco" ondragover="dragOverHandler(event)" ondrop="dropHandler(event)"></div>
 
   <!-- Contatori -->
   <div class="contatori-container">
