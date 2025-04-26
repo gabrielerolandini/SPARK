@@ -12,18 +12,37 @@
       align-items: center;
     }
 
-    #mazzo-container {
+    .mazzi-container {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin-bottom: 30px;
+    }
+
+    .mazzo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .mazzo-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .mazzo-container {
       position: relative;
-      width: 120px;
-      height: 180px;
+      width: 160px;
+      height: 240px;
       border: 2px solid #000;
       margin-bottom: 10px;
     }
 
-    #mazzo-counter {
+    .mazzo-counter {
       position: absolute;
-      top: -15px;
-      left: -15px;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
       background-color: red;
       color: white;
       border-radius: 50%;
@@ -33,10 +52,10 @@
       justify-content: center;
       align-items: center;
       font-weight: bold;
+      font-size: 14px;
     }
 
-    #mazzo-container img {
-      position: absolute;
+    .mazzo-container img {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -44,33 +63,33 @@
       transition: transform 0.3s;
     }
 
-    #mazzo-buttons {
-      margin-bottom: 20px;
+    .azioni-mazzo {
+      display: flex;
+      gap: 5px;
+      margin-top: 10px;
     }
 
-    #mazzo-buttons button {
-      margin: 0 5px;
-      padding: 10px 20px;
-      font-size: 16px;
+    .azioni-mazzo button {
+      padding: 8px 12px;
+      font-size: 14px;
     }
 
-    #area-gioco, #area-scarti {
-      width: 80%;
-      min-height: 200px;
+    #area-gioco {
+      width: 90%;
+      min-height: 300px;
       border: 3px dashed #555;
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      padding: 10px;
+      gap: 15px;
+      padding: 20px;
       justify-content: center;
       align-items: flex-start;
-      margin-bottom: 20px;
     }
 
     .carta {
       position: relative;
-      width: 120px;
-      height: 180px;
+      width: 160px;
+      height: 240px;
       object-fit: cover;
       cursor: pointer;
       transition: all 0.3s;
@@ -86,54 +105,82 @@
       display: flex;
       justify-content: center;
       margin-top: 5px;
+      gap: 5px;
     }
 
     .azioni-carta button {
-      margin: 0 5px;
       padding: 5px 10px;
       font-size: 12px;
     }
+
   </style>
 </head>
 <body>
 
-  <div id="mazzo-container">
-    <div id="mazzo-counter">0</div>
+  <div class="mazzi-container">
+    <div class="mazzo">
+      <div class="mazzo-title">MAZZO PRINCIPALE</div>
+      <div id="mazzo-container" class="mazzo-container">
+        <div class="mazzo-counter" id="mazzo-counter">0</div>
+      </div>
+      <div class="azioni-mazzo">
+        <button onclick="pescaCarta()">Pesca</button>
+        <button onclick="mischiaMazzo()">Mischia</button>
+      </div>
+    </div>
+
+    <div class="mazzo">
+      <div class="mazzo-title">MAZZO SCARTI</div>
+      <div id="scarti-container" class="mazzo-container">
+        <div class="mazzo-counter" id="scarti-counter">0</div>
+      </div>
+      <div class="azioni-mazzo">
+        <button onclick="ripristinaScarti()">Ripristina</button>
+      </div>
+    </div>
+
+    <div class="mazzo">
+      <div class="mazzo-title">MAZZO MINACCE</div>
+      <div id="minacce-container" class="mazzo-container">
+        <div class="mazzo-counter" id="minacce-counter">0</div>
+      </div>
+      <div class="azioni-mazzo">
+        <button onclick="aggiungiMinaccia()">Aggiungi</button>
+        <button onclick="mischiaMinacce()">Mischia</button>
+      </div>
+    </div>
   </div>
 
-  <div id="mazzo-buttons">
-    <button onclick="pescaCarta()">Pesca</button>
-    <button onclick="mischiaMazzo()">Mischia</button>
-  </div>
-
-  <div id="area-gioco">
-  </div>
-
-  <div id="area-scarti">
-  </div>
-
-  <div id="scarti-buttons">
-    <button onclick="ripristinaScarti()">Ripristina Scarti</button>
-  </div>
+  <div id="area-gioco"></div>
 
   <script>
     let mazzo = [];
     let scarti = [];
+    let minacce = [];
 
-    // Popoliamo il mazzo da 00.png a 09.png
+    // Popoliamo mazzi
     for (let i = 0; i <= 9; i++) {
-      const numero = i.toString().padStart(2, '0');
-      mazzo.push({ src: `carte/${numero}.png`, rotazione: 0 });
+      const num = i.toString().padStart(2, '0');
+      mazzo.push({ src: `carte/${num}.png`, rotazione: 0 });
+    }
+    for (let i = 10; i <= 14; i++) {
+      minacce.push({ src: `carte/${i}.png`, rotazione: 0 });
     }
 
-    function aggiornaMazzo() {
-      const mazzoContainer = document.getElementById('mazzo-container');
-      mazzoContainer.innerHTML = '<div id="mazzo-counter">' + mazzo.length + '</div>';
-      if (mazzo.length > 0) {
-        const cartaInCima = document.createElement('img');
-        cartaInCima.src = mazzo[0].src;
-        cartaInCima.style.transform = `rotate(${mazzo[0].rotazione}deg)`;
-        mazzoContainer.appendChild(cartaInCima);
+    function aggiornaMazzi() {
+      aggiornaMazzoSingolo('mazzo-container', 'mazzo-counter', mazzo);
+      aggiornaMazzoSingolo('scarti-container', 'scarti-counter', scarti);
+      aggiornaMazzoSingolo('minacce-container', 'minacce-counter', minacce);
+    }
+
+    function aggiornaMazzoSingolo(containerId, counterId, array) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = `<div class="mazzo-counter" id="${counterId}">${array.length}</div>`;
+      if (array.length > 0) {
+        const carta = document.createElement('img');
+        carta.src = array[0].src;
+        carta.style.transform = `rotate(${array[0].rotazione}deg)`;
+        container.appendChild(carta);
       }
     }
 
@@ -141,7 +188,11 @@
       if (mazzo.length === 0) return;
       const areaGioco = document.getElementById('area-gioco');
       const cartaData = mazzo.shift();
+      creaCartaInArea(areaGioco, cartaData);
+      aggiornaMazzi();
+    }
 
+    function creaCartaInArea(area, cartaData) {
       const cartaContainer = document.createElement('div');
       cartaContainer.style.display = 'flex';
       cartaContainer.style.flexDirection = 'column';
@@ -171,17 +222,37 @@
 
       cartaContainer.appendChild(carta);
       cartaContainer.appendChild(azioni);
-      areaGioco.appendChild(cartaContainer);
-
-      aggiornaMazzo();
+      area.appendChild(cartaContainer);
     }
 
     function mischiaMazzo() {
-      for (let i = mazzo.length - 1; i > 0; i--) {
+      mischiaArray(mazzo);
+      aggiornaMazzi();
+    }
+
+    function mischiaMinacce() {
+      mischiaArray(minacce);
+      aggiornaMazzi();
+    }
+
+    function mischiaArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [mazzo[i], mazzo[j]] = [mazzo[j], mazzo[i]];
+        [array[i], array[j]] = [array[j], array[i]];
       }
-      aggiornaMazzo();
+    }
+
+    function aggiungiMinaccia() {
+      if (minacce.length === 0) return;
+      scarti.push(minacce.shift());
+      aggiornaMazzi();
+    }
+
+    function ripristinaScarti() {
+      mazzo = mazzo.concat(scarti);
+      scarti = [];
+      mischiaMazzo();
+      aggiornaMazzi();
     }
 
     function toggleSelezione(carta) {
@@ -189,12 +260,9 @@
     }
 
     function scartaCarta(container, carta) {
-      const areaScarti = document.getElementById('area-scarti');
-      const nuovaCarta = carta.cloneNode(true);
-      nuovaCarta.classList.remove('selezionata');
-      nuovaCarta.style.transform = `rotate(${carta.dataset.rotazione}deg)`;
-      areaScarti.appendChild(nuovaCarta);
+      scarti.push({ src: carta.src, rotazione: parseInt(carta.dataset.rotazione) || 0 });
       container.remove();
+      aggiornaMazzi();
     }
 
     function ruotaCarta(carta) {
@@ -204,17 +272,8 @@
       carta.style.transform = `rotate(${rotazione}deg)`;
     }
 
-    function ripristinaScarti() {
-      const areaScarti = document.getElementById('area-scarti');
-      const carteScartate = Array.from(areaScarti.querySelectorAll('img'));
-      carteScartate.forEach(carta => {
-        mazzo.push({ src: carta.src, rotazione: parseInt(carta.dataset.rotazione) || 0 });
-      });
-      areaScarti.innerHTML = '';
-      mischiaMazzo();
-    }
-
-    aggiornaMazzo();
+    // Inizializzazione
+    aggiornaMazzi();
   </script>
 
 </body>
