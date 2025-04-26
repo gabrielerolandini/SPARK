@@ -2,298 +2,72 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>Simulatore Gioco di Carte</title>
-  <style>
-    body {
-      margin: 20px;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-
-    .top-container {
-      display: flex;
-      flex: 1;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .mazzo, #scarti, #minacce {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 160px;
-    }
-
-    #area-gioco {
-      flex: 2;
-      min-height: 500px;
-      margin: 0 20px;
-      border: 3px dashed #555;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
-      padding: 20px;
-      justify-content: center;
-      align-items: flex-start;
-      position: relative;
-    }
-
-    .mazzo-title {
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .mazzo-container {
-      position: relative;
-      width: 160px;
-      height: 240px;
-      border: 2px solid #000;
-      margin-bottom: 10px;
-    }
-
-    .mazzo-container img, .carta {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      transform: rotate(0deg);
-      transition: transform 0.3s;
-    }
-
-    .azioni-mazzo button, .azioni-carta button, .counter-buttons button {
-      margin: 5px;
-      padding: 8px 12px;
-      font-size: 14px;
-    }
-
-    .azioni-mazzo, .azioni-carta {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .carta-container {
-      position: relative;
-      width: 160px;
-      height: 240px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .selezionata {
-      border: 3px solid blue;
-      transform: translateY(10px);
-    }
-
-    .tuckata {
-      position: absolute;
-      width: 160px;
-      height: 240px;
-      object-fit: contain;
-      pointer-events: none;
-      left: 0;
-    }
-
-    .counters-container {
-      margin-top: 20px;
-      display: flex;
-      justify-content: center;
-      gap: 100px;
-    }
-
-    .counter {
-      position: relative;
-      width: 300px;
-      height: 10px;
-      background: lightgray;
-      border-radius: 5px;
-    }
-
-    .cursor {
-      position: absolute;
-      top: -5px;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: green;
-      transform: translateX(0);
-      transition: transform 0.3s;
-    }
-
-    .cursor.second {
-      background: deepskyblue;
-    }
-
-    .counter-buttons {
-      display: flex;
-      justify-content: center;
-      margin-top: 5px;
-    }
-
-  </style>
+  <title>Simulatore Gioco Carte</title>
+  <link rel="stylesheet" href="stile.css">
 </head>
 <body>
 
-<div class="top-container">
+  <!-- Sezione Mazzi in Alto -->
+  <div class="mazzi-container">
+    <div class="mazzo">
+      <div class="mazzo-titolo">Mazzo Principale</div>
+      <div id="mazzo-container" class="mazzo-box"></div>
+      <div class="mazzo-bottoni">
+        <button onclick="pescaCarta()">Pesca</button>
+        <button onclick="mischiaMazzo()">Mischia</button>
+      </div>
+    </div>
 
-  <div class="mazzo">
-    <div class="mazzo-title">Mazzo di Pesca</div>
-    <div id="mazzo-container" class="mazzo-container"></div>
-    <div class="azioni-mazzo">
-      <button onclick="pescaCarta()">Pesca</button>
-      <button onclick="mischiaMazzo()">Mischia</button>
+    <div class="mazzo">
+      <div class="mazzo-titolo">Mazzo Scarti</div>
+      <div id="scarti-container" class="mazzo-box"></div>
+      <div class="mazzo-bottoni">
+        <button onclick="ripristinaScarti()">Ripristina</button>
+      </div>
+    </div>
+
+    <div class="mazzo">
+      <div class="mazzo-titolo">Mazzo Minacce</div>
+      <div id="minacce-container" class="mazzo-box"></div>
+      <div class="mazzo-bottoni">
+        <button onclick="aggiungiMinaccia()">Aggiungi</button>
+        <button onclick="mischiaMinacce()">Mischia</button>
+      </div>
     </div>
   </div>
 
-  <div id="area-gioco"></div>
+  <!-- Sezione Area di Gioco -->
+  <div id="area-gioco" class="area-gioco"></div>
 
-  <div id="scarti">
-    <div class="mazzo-title">Mazzo Scarti</div>
-    <div id="scarti-container" class="mazzo-container"></div>
-    <div class="azioni-mazzo">
-      <button onclick="ripristinaScarti()">Ripristina</button>
+  <!-- Sezione Contatori -->
+  <div class="contatori-container">
+    <div class="contatore">
+      <div class="numeri-tracciato">
+        <span>0</span><span>1</span><span>1</span><span>2</span><span>2</span><span>3</span><span>3</span><span>II</span>
+      </div>
+      <div class="tracciato">
+        <div id="cursor1" class="cursore verde"></div>
+      </div>
+      <div class="bottoni-tracciato">
+        <button onclick="muoviCursor('cursor1', -1)">-</button>
+        <button onclick="muoviCursor('cursor1', 1)">+</button>
+      </div>
+    </div>
+
+    <div class="contatore">
+      <div class="numeri-tracciato">
+        <span>0</span><span>1</span><span>1</span><span>2</span><span>2</span><span>3</span><span>3</span><span>II</span>
+      </div>
+      <div class="tracciato">
+        <div id="cursor2" class="cursore azzurro"></div>
+      </div>
+      <div class="bottoni-tracciato">
+        <button onclick="muoviCursor('cursor2', -1)">-</button>
+        <button onclick="muoviCursor('cursor2', 1)">+</button>
+      </div>
     </div>
   </div>
 
-  <div id="minacce">
-    <div class="mazzo-title">Mazzo Minacce</div>
-    <div id="minacce-container" class="mazzo-container"></div>
-    <div class="azioni-mazzo">
-      <button onclick="aggiungiMinaccia()">Aggiungi</button>
-      <button onclick="mischiaMinacce()">Mischia</button>
-    </div>
-  </div>
-
-</div>
-
-<div class="counters-container">
-  <div>
-    <div class="counter">
-      <div id="cursor1" class="cursor"></div>
-    </div>
-    <div class="counter-buttons">
-      <button onclick="moveCursor('cursor1', -1)">-</button>
-      <button onclick="moveCursor('cursor1', 1)">+</button>
-    </div>
-  </div>
-
-  <div>
-    <div class="counter">
-      <div id="cursor2" class="cursor second"></div>
-    </div>
-    <div class="counter-buttons">
-      <button onclick="moveCursor('cursor2', -1)">-</button>
-      <button onclick="moveCursor('cursor2', 1)">+</button>
-    </div>
-  </div>
-</div>
-
-<script>
-let position = { cursor1: 0, cursor2: 0 };
-
-function moveCursor(id, dir) {
-  if (position[id] + dir < 0 || position[id] + dir > 6) return;
-  position[id] += dir;
-  document.getElementById(id).style.transform = `translateX(${position[id] * 50}px)`;
-}
-
-let mazzo = [];
-let scarti = [];
-let minacce = [];
-
-for (let i = 0; i <= 9; i++) {
-  mazzo.push({ src: `carte/${i.toString().padStart(2, '0')}.png`, rotazione: 0 });
-}
-for (let i = 10; i <= 14; i++) {
-  minacce.push({ src: `carte/${i}.png`, rotazione: 0 });
-}
-
-function pescaCarta() {
-  if (mazzo.length === 0) return;
-  const areaGioco = document.getElementById('area-gioco');
-  const cartaData = mazzo.shift();
-  creaCartaInArea(areaGioco, cartaData);
-}
-
-function creaCartaInArea(area, cartaData) {
-  const container = document.createElement('div');
-  container.classList.add('carta-container');
-
-  const carta = document.createElement('img');
-  carta.src = cartaData.src;
-  carta.classList.add('carta');
-  carta.dataset.rotazione = cartaData.rotazione;
-  carta.addEventListener('click', () => carta.classList.toggle('selezionata'));
-
-  const azioni = document.createElement('div');
-  azioni.classList.add('azioni-carta');
-
-  const btnScarta = document.createElement('button');
-  btnScarta.innerText = 'Scarta';
-  btnScarta.onclick = () => scartaCarta(container);
-
-  const btnRuota = document.createElement('button');
-  btnRuota.innerText = 'Ruota';
-  btnRuota.onclick = () => ruotaCarta(carta);
-
-  const btnTuck = document.createElement('button');
-  btnTuck.innerText = 'Storing';
-  btnTuck.onclick = () => tuckCarte(container);
-
-  azioni.append(btnScarta, btnRuota, btnTuck);
-
-  container.appendChild(carta);
-  container.appendChild(azioni);
-  area.appendChild(container);
-}
-
-function scartaCarta(container) {
-  container.querySelectorAll('img').forEach(carta => {
-    scarti.push({ src: carta.src, rotazione: parseInt(carta.dataset.rotazione) || 0 });
-  });
-  container.remove();
-}
-
-function ruotaCarta(carta) {
-  let rot = parseInt(carta.dataset.rotazione) || 0;
-  rot = (rot + 180) % 360;
-  carta.dataset.rotazione = rot;
-  carta.style.transform = `rotate(${rot}deg)`;
-}
-
-function tuckCarte(containerTarget) {
-  const selezionate = document.querySelectorAll('.selezionata');
-  const tuckateEsistenti = containerTarget.querySelectorAll('.tuckata').length;
-  let offset = -25 * (tuckateEsistenti + 1);
-  let z = 9 - tuckateEsistenti;
-  selezionate.forEach(carta => {
-    const clone = carta.cloneNode(true);
-    clone.classList.remove('selezionata');
-    clone.classList.add('tuckata');
-    clone.style.top = `${offset}px`;
-    clone.style.zIndex = z;
-    clone.style.position = 'absolute';
-    containerTarget.appendChild(clone);
-    carta.closest('.carta-container').remove();
-    offset -= 25;
-    z--;
-  });
-}
-
-function mischiaArray(array) {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
-function mischiaMazzo() { mischiaArray(mazzo); }
-function mischiaMinacce() { mischiaArray(minacce); }
-function ripristinaScarti() { mazzo = [...mazzo, ...scarti]; scarti = []; }
-function aggiungiMinaccia() { if (minacce.length) scarti.push(minacce.shift()); }
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
