@@ -1,10 +1,9 @@
-// Posizioni iniziali dei cursori
+// Posizioni iniziali cursori
 let position = {
   cursor1: 0,
   cursor2: 0
 };
 
-// Funzione per muovere i cursori
 function muoviCursor(id, dir) {
   if (position[id] + dir < 0 || position[id] + dir > 7) return;
   position[id] += dir;
@@ -16,7 +15,7 @@ let mazzo = [];
 let scarti = [];
 let minacce = [];
 
-// Caricamento iniziale carte
+// Inizializzazione carte
 for (let i = 0; i <= 9; i++) {
   mazzo.push({ src: `carte/${i.toString().padStart(2, '0')}.png`, rotazione: 0 });
 }
@@ -24,16 +23,13 @@ for (let i = 10; i <= 14; i++) {
   minacce.push({ src: `carte/${i}.png`, rotazione: 0 });
 }
 
-// Funzione pesca carta
+// Funzioni mazzi
 function pescaCarta() {
   if (mazzo.length === 0) return;
-  const areaGioco = document.getElementById('area-gioco');
-  const cartaData = mazzo.shift();
-  creaCartaInArea(areaGioco, cartaData);
+  creaCartaInArea(document.getElementById('area-gioco'), mazzo.shift());
   aggiornaMazzi();
 }
 
-// Creazione carta in area di gioco
 function creaCartaInArea(area, cartaData) {
   const container = document.createElement('div');
   container.classList.add('carta-container');
@@ -66,7 +62,6 @@ function creaCartaInArea(area, cartaData) {
   area.appendChild(container);
 }
 
-// Scarta carta
 function scartaCarta(container) {
   container.querySelectorAll('img').forEach(carta => {
     scarti.push({ src: carta.src, rotazione: parseInt(carta.dataset.rotazione) || 0 });
@@ -75,7 +70,6 @@ function scartaCarta(container) {
   aggiornaMazzi();
 }
 
-// Ruota carta
 function ruotaCarta(carta) {
   let rot = parseInt(carta.dataset.rotazione) || 0;
   rot = (rot + 180) % 360;
@@ -83,7 +77,6 @@ function ruotaCarta(carta) {
   carta.style.transform = `rotate(${rot}deg)`;
 }
 
-// Tuck carte
 function tuckCarte(containerTarget) {
   const selezionate = document.querySelectorAll('.selezionata');
   const tuckateEsistenti = containerTarget.querySelectorAll('.tuckata').length;
@@ -105,7 +98,6 @@ function tuckCarte(containerTarget) {
   });
 }
 
-// Mischia array
 function mischiaArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -113,21 +105,18 @@ function mischiaArray(array) {
   }
 }
 
-// Funzioni mazzi
 function mischiaMazzo() { mischiaArray(mazzo); aggiornaMazzi(); }
 function mischiaMinacce() { mischiaArray(minacce); aggiornaMazzi(); }
 function ripristinaScarti() { mazzo = [...mazzo, ...scarti]; scarti = []; aggiornaMazzi(); }
 function aggiungiMinaccia() { if (minacce.length) scarti.push(minacce.shift()); aggiornaMazzi(); }
 
-// Aggiorna mazzi (mazzo principale, scarti, minacce)
 function aggiornaMazzi() {
-  aggiornaMazzoSingolo('mazzo-container', mazzo);
-  aggiornaMazzoSingolo('scarti-container', scarti);
-  aggiornaMazzoSingolo('minacce-container', minacce);
+  aggiornaMazzoSingolo('mazzo-container', mazzo, 'contatore-mazzo');
+  aggiornaMazzoSingolo('scarti-container', scarti, 'contatore-scarti');
+  aggiornaMazzoSingolo('minacce-container', minacce, 'contatore-minacce');
 }
 
-// Funzione aggiorna singolo mazzo
-function aggiornaMazzoSingolo(id, array) {
+function aggiornaMazzoSingolo(id, array, contatoreId) {
   const container = document.getElementById(id);
   container.innerHTML = '';
   if (array.length > 0) {
@@ -136,7 +125,8 @@ function aggiornaMazzoSingolo(id, array) {
     carta.style.transform = `rotate(${array[0].rotazione}deg)`;
     container.appendChild(carta);
   }
+  document.getElementById(contatoreId).innerText = `Carte: ${array.length}`;
 }
 
-// Inizializzazione
+// Avvio
 aggiornaMazzi();
