@@ -39,7 +39,26 @@ for (let i = 10; i <= 14; i++) {
 mischiaArray(mazzo);
 mischiaArray(minacce);
 
+// Gestione Drag&Drop
+function dragStartHandler(ev) {
+  ev.dataTransfer.setData("text/plain", ev.target.parentElement.id);
+}
+
+function dragOverHandler(ev) {
+  ev.preventDefault();
+}
+
+function dropHandler(ev) {
+  ev.preventDefault();
+  const id = ev.dataTransfer.getData("text/plain");
+  const elemento = document.getElementById(id);
+  if (elemento) {
+    ev.target.appendChild(elemento);
+  }
+}
+
 // Pesca carta
+let cartaId = 0;
 function pescaCarta() {
   if (mazzo.length === 0) return;
   creaCartaInArea(document.getElementById('area-gioco'), mazzo.shift());
@@ -50,6 +69,7 @@ function pescaCarta() {
 function creaCartaInArea(area, cartaData) {
   const container = document.createElement('div');
   container.classList.add('carta-container');
+  container.id = 'carta-' + (cartaId++);
 
   const carta = document.createElement('img');
   carta.src = cartaData.stato === 'fronte' ? cartaData.fronte : cartaData.retro;
@@ -58,8 +78,9 @@ function creaCartaInArea(area, cartaData) {
   carta.dataset.stato = cartaData.stato;
   carta.dataset.fronte = cartaData.fronte;
   carta.dataset.retro = cartaData.retro;
+  carta.draggable = true;
+  carta.ondragstart = dragStartHandler;
   carta.addEventListener('click', () => carta.classList.toggle('selezionata'));
-
   carta.style.transform = `rotate(${cartaData.rotazione}deg)`;
 
   const azioni = document.createElement('div');
@@ -73,11 +94,15 @@ function creaCartaInArea(area, cartaData) {
   btnGira.innerHTML = '<i class="fa-solid fa-retweet"></i>';
   btnGira.onclick = () => giraCarta(carta);
 
+  const btnTuck = document.createElement('button');
+  btnTuck.innerHTML = '<i class="fa-solid fa-download"></i>';
+  btnTuck.onclick = () => tuckCarte(container);
+
   const btnScarta = document.createElement('button');
   btnScarta.innerText = '🗑️';
   btnScarta.onclick = () => scartaCarta(container);
 
-  azioni.append(btnRuota, btnGira, btnScarta);
+  azioni.append(btnRuota, btnGira, btnTuck, btnScarta);
 
   container.appendChild(carta);
   container.appendChild(azioni);
@@ -115,7 +140,7 @@ function copiaCarta(carta) {
   };
 }
 
-// Scarta carta e tutte le tuckate
+// Scarta carta e tuckate
 function scartaCarta(container) {
   container.querySelectorAll('img').forEach(carta => {
     scarti.push(copiaCarta(carta));
@@ -124,7 +149,7 @@ function scartaCarta(container) {
   aggiornaMazzi();
 }
 
-// Tuck carte selezionate sotto altra carta
+// Tuck carte selezionate
 function tuckCarte(containerTarget) {
   const selezionate = document.querySelectorAll('.selezionata');
   const tuckateEsistenti = containerTarget.querySelectorAll('.tuckata').length;
@@ -160,14 +185,13 @@ function mischiaMinacce() { mischiaArray(minacce); aggiornaMazzi(); }
 function ripristinaScarti() { mazzo = [...mazzo, ...scarti]; scarti = []; aggiornaMazzi(); }
 function aggiungiMinaccia() { if (minacce.length) scarti.push(minacce.shift()); aggiornaMazzi(); }
 
-// Aggiorna i mazzi e contatori
+// Aggiorna mazzi
 function aggiornaMazzi() {
   aggiornaMazzoSingolo('mazzo-container', mazzo, 'counter-mazzo');
   aggiornaMazzoSingolo('scarti-container', scarti, 'counter-scarti');
   aggiornaMazzoSingolo('minacce-container', minacce, 'counter-minacce');
 }
 
-// Aggiorna singolo mazzo
 function aggiornaMazzoSingolo(id, array, counterId) {
   const container = document.getElementById(id);
   container.innerHTML = '';
