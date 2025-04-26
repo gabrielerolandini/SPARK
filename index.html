@@ -261,8 +261,9 @@
 
     function tuckCarte(containerTarget) {
       const carteSelezionate = document.querySelectorAll('.selezionata');
-      let offset = -25;
-      let zindex = 9;
+      const tuckateEsistenti = containerTarget.querySelectorAll('.tuckata').length;
+      let offset = -25 * (tuckateEsistenti + 1);
+      let zindex = 9 - tuckateEsistenti;
 
       carteSelezionate.forEach(carta => {
         const parent = carta.closest('.carta-container');
@@ -274,6 +275,7 @@
         clone.style.position = 'absolute';
         clone.style.transform = `rotate(${carta.dataset.rotazione}deg)`;
         containerTarget.appendChild(clone);
+
         offset -= 25;
         zindex--;
         parent.remove();
