@@ -9,41 +9,40 @@
       font-family: sans-serif;
       display: flex;
       flex-direction: column;
-      align-items: center;
+      height: 100vh;
     }
 
-    .mazzi-container {
+    .top-container {
       display: flex;
-      justify-content: center;
-      gap: 50px;
-      margin-bottom: 30px;
+      flex: 1;
+      justify-content: space-between;
+      align-items: flex-start;
     }
 
-    .mazzo {
+    .mazzo, #scarti, #minacce {
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 160px;
+    }
+
+    #area-gioco {
+      flex: 2;
+      min-height: 500px;
+      margin: 0 20px;
+      border: 3px dashed #555;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      padding: 20px;
+      justify-content: center;
+      align-items: flex-start;
+      position: relative;
     }
 
     .mazzo-title {
       font-weight: bold;
-      margin-bottom: 5px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .mazzo-counter {
-      background-color: red;
-      color: white;
-      border-radius: 50%;
-      width: 30px;
-      height: 30px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: bold;
-      font-size: 14px;
+      margin-bottom: 10px;
     }
 
     .mazzo-container {
@@ -54,7 +53,7 @@
       margin-bottom: 10px;
     }
 
-    .mazzo-container img {
+    .mazzo-container img, .carta {
       width: 100%;
       height: 100%;
       object-fit: contain;
@@ -62,27 +61,16 @@
       transition: transform 0.3s;
     }
 
-    .azioni-mazzo {
-      display: flex;
-      gap: 5px;
-      margin-top: 10px;
-    }
-
-    .azioni-mazzo button {
+    .azioni-mazzo button, .azioni-carta button, .counter-buttons button {
+      margin: 5px;
       padding: 8px 12px;
       font-size: 14px;
     }
 
-    #area-gioco {
-      width: 90%;
-      min-height: 300px;
-      border: 3px dashed #555;
+    .azioni-mazzo, .azioni-carta {
       display: flex;
       flex-wrap: wrap;
-      gap: 15px;
-      padding: 20px;
       justify-content: center;
-      align-items: flex-start;
     }
 
     .carta-container {
@@ -94,226 +82,218 @@
       align-items: center;
     }
 
-    .carta {
-      width: 160px;
-      height: 240px;
-      object-fit: contain;
-      cursor: pointer;
-      transition: all 0.3s;
-      transform-origin: center center;
-      z-index: 10;
-      position: relative;
-    }
-
     .selezionata {
       border: 3px solid blue;
       transform: translateY(10px);
     }
 
     .tuckata {
+      position: absolute;
       width: 160px;
       height: 240px;
       object-fit: contain;
       pointer-events: none;
-      position: absolute;
       left: 0;
     }
 
-    .azioni-carta {
+    .counters-container {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 100px;
+    }
+
+    .counter {
+      position: relative;
+      width: 300px;
+      height: 10px;
+      background: lightgray;
+      border-radius: 5px;
+    }
+
+    .cursor {
+      position: absolute;
+      top: -5px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: green;
+      transform: translateX(0);
+      transition: transform 0.3s;
+    }
+
+    .cursor.second {
+      background: deepskyblue;
+    }
+
+    .counter-buttons {
       display: flex;
       justify-content: center;
       margin-top: 5px;
-      gap: 5px;
     }
 
-    .azioni-carta button {
-      padding: 5px 10px;
-      font-size: 12px;
-    }
   </style>
 </head>
 <body>
 
-  <div class="mazzi-container">
-    <div class="mazzo">
-      <div class="mazzo-title">MAZZO PRINCIPALE <div id="mazzo-counter" class="mazzo-counter">0</div></div>
-      <div id="mazzo-container" class="mazzo-container"></div>
-      <div class="azioni-mazzo">
-        <button onclick="pescaCarta()">Pesca</button>
-        <button onclick="mischiaMazzo()">Mischia</button>
-      </div>
-    </div>
+<div class="top-container">
 
-    <div class="mazzo">
-      <div class="mazzo-title">MAZZO SCARTI <div id="scarti-counter" class="mazzo-counter">0</div></div>
-      <div id="scarti-container" class="mazzo-container"></div>
-      <div class="azioni-mazzo">
-        <button onclick="ripristinaScarti()">Ripristina</button>
-      </div>
-    </div>
-
-    <div class="mazzo">
-      <div class="mazzo-title">MAZZO MINACCE <div id="minacce-counter" class="mazzo-counter">0</div></div>
-      <div id="minacce-container" class="mazzo-container"></div>
-      <div class="azioni-mazzo">
-        <button onclick="aggiungiMinaccia()">Aggiungi</button>
-        <button onclick="mischiaMinacce()">Mischia</button>
-      </div>
+  <div class="mazzo">
+    <div class="mazzo-title">Mazzo di Pesca</div>
+    <div id="mazzo-container" class="mazzo-container"></div>
+    <div class="azioni-mazzo">
+      <button onclick="pescaCarta()">Pesca</button>
+      <button onclick="mischiaMazzo()">Mischia</button>
     </div>
   </div>
 
   <div id="area-gioco"></div>
 
-  <script>
-    let mazzo = [];
-    let scarti = [];
-    let minacce = [];
+  <div id="scarti">
+    <div class="mazzo-title">Mazzo Scarti</div>
+    <div id="scarti-container" class="mazzo-container"></div>
+    <div class="azioni-mazzo">
+      <button onclick="ripristinaScarti()">Ripristina</button>
+    </div>
+  </div>
 
-    for (let i = 0; i <= 9; i++) {
-      const num = i.toString().padStart(2, '0');
-      mazzo.push({ src: `carte/${num}.png`, rotazione: 0 });
-    }
-    for (let i = 10; i <= 14; i++) {
-      minacce.push({ src: `carte/${i}.png`, rotazione: 0 });
-    }
+  <div id="minacce">
+    <div class="mazzo-title">Mazzo Minacce</div>
+    <div id="minacce-container" class="mazzo-container"></div>
+    <div class="azioni-mazzo">
+      <button onclick="aggiungiMinaccia()">Aggiungi</button>
+      <button onclick="mischiaMinacce()">Mischia</button>
+    </div>
+  </div>
 
-    function aggiornaMazzi() {
-      aggiornaMazzoSingolo('mazzo-container', 'mazzo-counter', mazzo);
-      aggiornaMazzoSingolo('scarti-container', 'scarti-counter', scarti);
-      aggiornaMazzoSingolo('minacce-container', 'minacce-counter', minacce);
-    }
+</div>
 
-    function aggiornaMazzoSingolo(containerId, counterId, array) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      document.getElementById(counterId).innerText = array.length;
-      if (array.length > 0) {
-        const carta = document.createElement('img');
-        carta.src = array[0].src;
-        carta.style.transform = `rotate(${array[0].rotazione}deg)`;
-        container.appendChild(carta);
-      }
-    }
+<div class="counters-container">
+  <div>
+    <div class="counter">
+      <div id="cursor1" class="cursor"></div>
+    </div>
+    <div class="counter-buttons">
+      <button onclick="moveCursor('cursor1', -1)">-</button>
+      <button onclick="moveCursor('cursor1', 1)">+</button>
+    </div>
+  </div>
 
-    function pescaCarta() {
-      if (mazzo.length === 0) return;
-      const areaGioco = document.getElementById('area-gioco');
-      const cartaData = mazzo.shift();
-      creaCartaInArea(areaGioco, cartaData);
-      aggiornaMazzi();
-    }
+  <div>
+    <div class="counter">
+      <div id="cursor2" class="cursor second"></div>
+    </div>
+    <div class="counter-buttons">
+      <button onclick="moveCursor('cursor2', -1)">-</button>
+      <button onclick="moveCursor('cursor2', 1)">+</button>
+    </div>
+  </div>
+</div>
 
-    function creaCartaInArea(area, cartaData) {
-      const container = document.createElement('div');
-      container.classList.add('carta-container');
+<script>
+let position = { cursor1: 0, cursor2: 0 };
 
-      const carta = document.createElement('img');
-      carta.src = cartaData.src;
-      carta.classList.add('carta');
-      carta.dataset.rotazione = cartaData.rotazione;
-      carta.style.transform = `rotate(${cartaData.rotazione}deg)`;
-      carta.addEventListener('click', () => toggleSelezione(carta));
+function moveCursor(id, dir) {
+  if (position[id] + dir < 0 || position[id] + dir > 6) return;
+  position[id] += dir;
+  document.getElementById(id).style.transform = `translateX(${position[id] * 50}px)`;
+}
 
-      const azioni = document.createElement('div');
-      azioni.classList.add('azioni-carta');
+let mazzo = [];
+let scarti = [];
+let minacce = [];
 
-      const bottoneScarta = document.createElement('button');
-      bottoneScarta.innerText = 'Scarta';
-      bottoneScarta.onclick = () => scartaCarta(container);
+for (let i = 0; i <= 9; i++) {
+  mazzo.push({ src: `carte/${i.toString().padStart(2, '0')}.png`, rotazione: 0 });
+}
+for (let i = 10; i <= 14; i++) {
+  minacce.push({ src: `carte/${i}.png`, rotazione: 0 });
+}
 
-      const bottoneRuota = document.createElement('button');
-      bottoneRuota.innerText = 'Ruota';
-      bottoneRuota.onclick = () => ruotaCarta(carta);
+function pescaCarta() {
+  if (mazzo.length === 0) return;
+  const areaGioco = document.getElementById('area-gioco');
+  const cartaData = mazzo.shift();
+  creaCartaInArea(areaGioco, cartaData);
+}
 
-      const bottoneTuck = document.createElement('button');
-      bottoneTuck.innerText = 'Storing';
-      bottoneTuck.onclick = () => tuckCarte(container);
+function creaCartaInArea(area, cartaData) {
+  const container = document.createElement('div');
+  container.classList.add('carta-container');
 
-      azioni.appendChild(bottoneScarta);
-      azioni.appendChild(bottoneRuota);
-      azioni.appendChild(bottoneTuck);
+  const carta = document.createElement('img');
+  carta.src = cartaData.src;
+  carta.classList.add('carta');
+  carta.dataset.rotazione = cartaData.rotazione;
+  carta.addEventListener('click', () => carta.classList.toggle('selezionata'));
 
-      container.appendChild(carta);
-      container.appendChild(azioni);
+  const azioni = document.createElement('div');
+  azioni.classList.add('azioni-carta');
 
-      area.appendChild(container);
-    }
+  const btnScarta = document.createElement('button');
+  btnScarta.innerText = 'Scarta';
+  btnScarta.onclick = () => scartaCarta(container);
 
-    function toggleSelezione(carta) {
-      carta.classList.toggle('selezionata');
-    }
+  const btnRuota = document.createElement('button');
+  btnRuota.innerText = 'Ruota';
+  btnRuota.onclick = () => ruotaCarta(carta);
 
-    function scartaCarta(container) {
-      const immagini = container.querySelectorAll('img');
-      immagini.forEach(carta => {
-        scarti.push({ src: carta.src, rotazione: parseInt(carta.dataset.rotazione) || 0 });
-      });
-      container.remove();
-      aggiornaMazzi();
-    }
+  const btnTuck = document.createElement('button');
+  btnTuck.innerText = 'Storing';
+  btnTuck.onclick = () => tuckCarte(container);
 
-    function ruotaCarta(carta) {
-      let rotazione = parseInt(carta.dataset.rotazione) || 0;
-      rotazione = (rotazione + 180) % 360;
-      carta.dataset.rotazione = rotazione;
-      carta.style.transform = `rotate(${rotazione}deg)`;
-    }
+  azioni.append(btnScarta, btnRuota, btnTuck);
 
-    function tuckCarte(containerTarget) {
-      const carteSelezionate = document.querySelectorAll('.selezionata');
-      const tuckateEsistenti = containerTarget.querySelectorAll('.tuckata').length;
-      let offset = -25 * (tuckateEsistenti + 1);
-      let zindex = 9 - tuckateEsistenti;
+  container.appendChild(carta);
+  container.appendChild(azioni);
+  area.appendChild(container);
+}
 
-      carteSelezionate.forEach(carta => {
-        const parent = carta.closest('.carta-container');
-        const clone = carta.cloneNode(true);
-        clone.classList.remove('selezionata');
-        clone.classList.add('tuckata');
-        clone.style.top = `${offset}px`;
-        clone.style.zIndex = zindex;
-        clone.style.position = 'absolute';
-        clone.style.transform = `rotate(${carta.dataset.rotazione}deg)`;
-        containerTarget.appendChild(clone);
+function scartaCarta(container) {
+  container.querySelectorAll('img').forEach(carta => {
+    scarti.push({ src: carta.src, rotazione: parseInt(carta.dataset.rotazione) || 0 });
+  });
+  container.remove();
+}
 
-        offset -= 25;
-        zindex--;
-        parent.remove();
-      });
-    }
+function ruotaCarta(carta) {
+  let rot = parseInt(carta.dataset.rotazione) || 0;
+  rot = (rot + 180) % 360;
+  carta.dataset.rotazione = rot;
+  carta.style.transform = `rotate(${rot}deg)`;
+}
 
-    function mischiaMazzo() {
-      mischiaArray(mazzo);
-      aggiornaMazzi();
-    }
+function tuckCarte(containerTarget) {
+  const selezionate = document.querySelectorAll('.selezionata');
+  const tuckateEsistenti = containerTarget.querySelectorAll('.tuckata').length;
+  let offset = -25 * (tuckateEsistenti + 1);
+  let z = 9 - tuckateEsistenti;
+  selezionate.forEach(carta => {
+    const clone = carta.cloneNode(true);
+    clone.classList.remove('selezionata');
+    clone.classList.add('tuckata');
+    clone.style.top = `${offset}px`;
+    clone.style.zIndex = z;
+    clone.style.position = 'absolute';
+    containerTarget.appendChild(clone);
+    carta.closest('.carta-container').remove();
+    offset -= 25;
+    z--;
+  });
+}
 
-    function mischiaMinacce() {
-      mischiaArray(minacce);
-      aggiornaMazzi();
-    }
+function mischiaArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
 
-    function aggiungiMinaccia() {
-      if (minacce.length === 0) return;
-      scarti.push(minacce.shift());
-      aggiornaMazzi();
-    }
-
-    function ripristinaScarti() {
-      mazzo = mazzo.concat(scarti);
-      scarti = [];
-      mischiaMazzo();
-      aggiornaMazzi();
-    }
-
-    function mischiaArray(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
-
-    aggiornaMazzi();
-  </script>
+function mischiaMazzo() { mischiaArray(mazzo); }
+function mischiaMinacce() { mischiaArray(minacce); }
+function ripristinaScarti() { mazzo = [...mazzo, ...scarti]; scarti = []; }
+function aggiungiMinaccia() { if (minacce.length) scarti.push(minacce.shift()); }
+</script>
 
 </body>
 </html>
