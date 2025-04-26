@@ -75,6 +75,7 @@ body {
   justify-content: center;
   align-items: flex-start;
   gap: 15px;
+  position: relative;
 }
 
 .carta-container {
@@ -90,7 +91,7 @@ body {
   width: 160px;
   height: 240px;
   object-fit: contain;
-  cursor: pointer;
+  cursor: move; /* important per drag */
   transition: all 0.3s;
   z-index: 10;
   position: relative;
