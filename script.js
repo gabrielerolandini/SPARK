@@ -15,61 +15,70 @@ let mazzo = [];
 let scarti = [];
 let minacce = [];
 
-// Inizializzazione carte
+// Inizializzazione carte (fronte/retro)
 for (let i = 0; i <= 9; i++) {
-  mazzo.push({ src: `carte/${i.toString().padStart(2, '0')}.png`, rotazione: 0 });
+  const num = i.toString().padStart(2, '0');
+  mazzo.push({
+    fronte: `carte/${num}.png`,
+    retro: `carte_retro/${num}.png`,
+    stato: 'fronte',
+    rotazione: 0
+  });
 }
 for (let i = 10; i <= 14; i++) {
-  minacce.push({ src: `carte/${i}.png`, rotazione: 0 });
+  const num = i.toString();
+  minacce.push({
+    fronte: `carte/${num}.png`,
+    retro: `carte_retro/${num}.png`,
+    stato: 'fronte',
+    rotazione: 0
+  });
 }
 
-// Funzioni mazzi
+// Pesca carta
 function pescaCarta() {
   if (mazzo.length === 0) return;
   creaCartaInArea(document.getElementById('area-gioco'), mazzo.shift());
   aggiornaMazzi();
 }
 
+// Creazione carta in area di gioco
 function creaCartaInArea(area, cartaData) {
   const container = document.createElement('div');
   container.classList.add('carta-container');
 
   const carta = document.createElement('img');
-  carta.src = cartaData.src;
+  carta.src = cartaData.fronte;
   carta.classList.add('carta');
   carta.dataset.rotazione = cartaData.rotazione;
+  carta.dataset.stato = cartaData.stato;
+  carta.dataset.fronte = cartaData.fronte;
+  carta.dataset.retro = cartaData.retro;
   carta.addEventListener('click', () => carta.classList.toggle('selezionata'));
 
   const azioni = document.createElement('div');
   azioni.classList.add('azioni-carta');
 
-  const btnScarta = document.createElement('button');
-  btnScarta.innerText = 'Scarta';
-  btnScarta.onclick = () => scartaCarta(container);
-
   const btnRuota = document.createElement('button');
-  btnRuota.innerText = 'Ruota';
+  btnRuota.innerHTML = '<i class="fa-solid fa-rotate-right"></i>';
   btnRuota.onclick = () => ruotaCarta(carta);
 
-  const btnTuck = document.createElement('button');
-  btnTuck.innerText = 'Storing';
-  btnTuck.onclick = () => tuckCarte(container);
+  const btnGira = document.createElement('button');
+  btnGira.innerHTML = '<i class="fa-solid fa-retweet"></i>';
+  btnGira.onclick = () => giraCarta(carta);
 
-  azioni.append(btnScarta, btnRuota, btnTuck);
+  const btnScarta = document.createElement('button');
+  btnScarta.innerText = '🗑️';
+  btnScarta.onclick = () => scartaCarta(container);
+
+  azioni.append(btnRuota, btnGira, btnScarta);
 
   container.appendChild(carta);
   container.appendChild(azioni);
   area.appendChild(container);
 }
 
-function scartaCarta(container) {
-  container.querySelectorAll('img').forEach(carta => {
-    scarti.push({ src: carta.src, rotazione: parseInt(carta.dataset.rotazione) || 0 });
-  });
-  container.remove();
-  aggiornaMazzi();
-}
-
+// Ruota carta
 function ruotaCarta(carta) {
   let rot = parseInt(carta.dataset.rotazione) || 0;
   rot = (rot + 180) % 360;
@@ -77,6 +86,34 @@ function ruotaCarta(carta) {
   carta.style.transform = `rotate(${rot}deg)`;
 }
 
+// Gira carta fronte/retro
+function giraCarta(carta) {
+  const stato = carta.dataset.stato;
+  if (stato === 'fronte') {
+    carta.src = carta.dataset.retro;
+    carta.dataset.stato = 'retro';
+  } else {
+    carta.src = carta.dataset.fronte;
+    carta.dataset.stato = 'fronte';
+  }
+  carta.style.transform = `rotate(${carta.dataset.rotazione}deg)`;
+}
+
+// Scarta carta
+function scartaCarta(container) {
+  container.querySelectorAll('img').forEach(carta => {
+    scarti.push({
+      fronte: carta.dataset.fronte,
+      retro: carta.dataset.retro,
+      stato: carta.dataset.stato,
+      rotazione: parseInt(carta.dataset.rotazione) || 0
+    });
+  });
+  container.remove();
+  aggiornaMazzi();
+}
+
+// Tuck carte
 function tuckCarte(containerTarget) {
   const selezionate = document.querySelectorAll('.selezionata');
   const tuckateEsistenti = containerTarget.querySelectorAll('.tuckata').length;
@@ -98,6 +135,7 @@ function tuckCarte(containerTarget) {
   });
 }
 
+// Mischia array
 function mischiaArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -110,22 +148,23 @@ function mischiaMinacce() { mischiaArray(minacce); aggiornaMazzi(); }
 function ripristinaScarti() { mazzo = [...mazzo, ...scarti]; scarti = []; aggiornaMazzi(); }
 function aggiungiMinaccia() { if (minacce.length) scarti.push(minacce.shift()); aggiornaMazzi(); }
 
+// Aggiorna i mazzi e contatori
 function aggiornaMazzi() {
-  aggiornaMazzoSingolo('mazzo-container', mazzo, 'contatore-mazzo');
-  aggiornaMazzoSingolo('scarti-container', scarti, 'contatore-scarti');
-  aggiornaMazzoSingolo('minacce-container', minacce, 'contatore-minacce');
+  aggiornaMazzoSingolo('mazzo-container', mazzo, 'counter-mazzo');
+  aggiornaMazzoSingolo('scarti-container', scarti, 'counter-scarti');
+  aggiornaMazzoSingolo('minacce-container', minacce, 'counter-minacce');
 }
 
-function aggiornaMazzoSingolo(id, array, contatoreId) {
+function aggiornaMazzoSingolo(id, array, counterId) {
   const container = document.getElementById(id);
   container.innerHTML = '';
   if (array.length > 0) {
     const carta = document.createElement('img');
-    carta.src = array[0].src;
+    carta.src = array[0].fronte;
     carta.style.transform = `rotate(${array[0].rotazione}deg)`;
     container.appendChild(carta);
   }
-  document.getElementById(contatoreId).innerText = `Carte: ${array.length}`;
+  document.getElementById(counterId).innerText = array.length;
 }
 
 // Avvio
