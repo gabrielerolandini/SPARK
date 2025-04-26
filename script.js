@@ -35,6 +35,10 @@ for (let i = 10; i <= 14; i++) {
   });
 }
 
+// Mischiamo all'inizio
+mischiaArray(mazzo);
+mischiaArray(minacce);
+
 // Pesca carta
 function pescaCarta() {
   if (mazzo.length === 0) return;
@@ -42,19 +46,21 @@ function pescaCarta() {
   aggiornaMazzi();
 }
 
-// Creazione carta in area di gioco
+// Crea carta nell'area di gioco
 function creaCartaInArea(area, cartaData) {
   const container = document.createElement('div');
   container.classList.add('carta-container');
 
   const carta = document.createElement('img');
-  carta.src = cartaData.fronte;
+  carta.src = cartaData.stato === 'fronte' ? cartaData.fronte : cartaData.retro;
   carta.classList.add('carta');
   carta.dataset.rotazione = cartaData.rotazione;
   carta.dataset.stato = cartaData.stato;
   carta.dataset.fronte = cartaData.fronte;
   carta.dataset.retro = cartaData.retro;
   carta.addEventListener('click', () => carta.classList.toggle('selezionata'));
+
+  carta.style.transform = `rotate(${cartaData.rotazione}deg)`;
 
   const azioni = document.createElement('div');
   azioni.classList.add('azioni-carta');
@@ -99,21 +105,26 @@ function giraCarta(carta) {
   carta.style.transform = `rotate(${carta.dataset.rotazione}deg)`;
 }
 
-// Scarta carta
+// Copia stato carta dal DOM
+function copiaCarta(carta) {
+  return {
+    fronte: carta.dataset.fronte,
+    retro: carta.dataset.retro,
+    stato: carta.dataset.stato,
+    rotazione: parseInt(carta.dataset.rotazione) || 0
+  };
+}
+
+// Scarta carta e tutte le tuckate
 function scartaCarta(container) {
   container.querySelectorAll('img').forEach(carta => {
-    scarti.push({
-      fronte: carta.dataset.fronte,
-      retro: carta.dataset.retro,
-      stato: carta.dataset.stato,
-      rotazione: parseInt(carta.dataset.rotazione) || 0
-    });
+    scarti.push(copiaCarta(carta));
   });
   container.remove();
   aggiornaMazzi();
 }
 
-// Tuck carte
+// Tuck carte selezionate sotto altra carta
 function tuckCarte(containerTarget) {
   const selezionate = document.querySelectorAll('.selezionata');
   const tuckateEsistenti = containerTarget.querySelectorAll('.tuckata').length;
@@ -143,6 +154,7 @@ function mischiaArray(array) {
   }
 }
 
+// Operazioni sui mazzi
 function mischiaMazzo() { mischiaArray(mazzo); aggiornaMazzi(); }
 function mischiaMinacce() { mischiaArray(minacce); aggiornaMazzi(); }
 function ripristinaScarti() { mazzo = [...mazzo, ...scarti]; scarti = []; aggiornaMazzi(); }
@@ -155,12 +167,13 @@ function aggiornaMazzi() {
   aggiornaMazzoSingolo('minacce-container', minacce, 'counter-minacce');
 }
 
+// Aggiorna singolo mazzo
 function aggiornaMazzoSingolo(id, array, counterId) {
   const container = document.getElementById(id);
   container.innerHTML = '';
   if (array.length > 0) {
     const carta = document.createElement('img');
-    carta.src = array[0].fronte;
+    carta.src = array[0].stato === 'fronte' ? array[0].fronte : array[0].retro;
     carta.style.transform = `rotate(${array[0].rotazione}deg)`;
     container.appendChild(carta);
   }
