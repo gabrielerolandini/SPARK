@@ -1,0 +1,146 @@
+body {
+  margin: 20px;
+  font-family: sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mazzi-container {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-bottom: 30px;
+}
+
+.mazzo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mazzo-titolo {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.mazzo-box {
+  width: 160px;
+  height: 240px;
+  border: 2px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+}
+
+.mazzo-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mazzo-bottoni {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 10px;
+  gap: 5px;
+}
+
+.area-gioco {
+  width: 90%;
+  height: 350px;
+  border: 3px dashed #555;
+  margin: 20px 0;
+  padding: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.carta-container {
+  position: relative;
+  width: 160px;
+  height: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.carta {
+  width: 160px;
+  height: 240px;
+  object-fit: contain;
+  cursor: pointer;
+  transition: all 0.3s;
+  z-index: 10;
+  position: relative;
+}
+
+.selezionata {
+  border: 3px solid blue;
+  transform: translateY(10px);
+}
+
+.tuckata {
+  width: 160px;
+  height: 240px;
+  object-fit: contain;
+  position: absolute;
+  pointer-events: none;
+  left: 0;
+}
+
+.contatori-container {
+  display: flex;
+  justify-content: center;
+  gap: 100px;
+  margin-top: 20px;
+}
+
+.contatore {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.numeri-tracciato {
+  display: flex;
+  justify-content: space-between;
+  width: 350px;
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.tracciato {
+  position: relative;
+  width: 350px;
+  height: 10px;
+  background: lightgray;
+  border-radius: 5px;
+}
+
+.cursore {
+  position: absolute;
+  top: -5px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: green;
+  transform: translateX(0);
+  transition: transform 0.3s;
+}
+
+.cursore.azzurro {
+  background: deepskyblue;
+}
+
+.bottoni-tracciato {
+  margin-top: 5px;
+  display: flex;
+  gap: 5px;
+}
