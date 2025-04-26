@@ -57,7 +57,7 @@
     .mazzo-container img {
       width: 100%;
       height: 100%;
-      object-fit: cover;
+      object-fit: contain;
       transform: rotate(0deg);
       transition: transform 0.3s;
     }
@@ -87,6 +87,8 @@
 
     .carta-container {
       position: relative;
+      width: 160px;
+      height: 240px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -95,7 +97,7 @@
     .carta {
       width: 160px;
       height: 240px;
-      object-fit: cover;
+      object-fit: contain;
       cursor: pointer;
       transition: all 0.3s;
       transform-origin: center center;
@@ -107,20 +109,23 @@
       transform: translateY(10px);
     }
 
-    .tuckate {
-      position: relative;
-      top: -30px;
+    .tuckate-container {
+      position: absolute;
+      top: 0;
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       z-index: 5;
     }
 
-    .tuckate img {
+    .tuckata {
       width: 160px;
-      height: 30px; /* circa 1/8 della carta */
-      object-fit: cover;
+      height: 30px;
+      object-fit: contain;
       pointer-events: none;
+      position: absolute;
+      left: 0;
     }
 
     .azioni-carta {
@@ -134,6 +139,7 @@
       padding: 5px 10px;
       font-size: 12px;
     }
+
   </style>
 </head>
 <body>
@@ -173,7 +179,6 @@
     let scarti = [];
     let minacce = [];
 
-    // Popoliamo mazzi
     for (let i = 0; i <= 9; i++) {
       const num = i.toString().padStart(2, '0');
       mazzo.push({ src: `carte/${num}.png`, rotazione: 0 });
@@ -209,8 +214,11 @@
     }
 
     function creaCartaInArea(area, cartaData) {
-      const cartaContainer = document.createElement('div');
-      cartaContainer.classList.add('carta-container');
+      const container = document.createElement('div');
+      container.classList.add('carta-container');
+
+      const tuckateContainer = document.createElement('div');
+      tuckateContainer.classList.add('tuckate-container');
 
       const carta = document.createElement('img');
       carta.src = cartaData.src;
@@ -219,15 +227,12 @@
       carta.style.transform = `rotate(${cartaData.rotazione}deg)`;
       carta.addEventListener('click', () => toggleSelezione(carta));
 
-      const tuckate = document.createElement('div');
-      tuckate.classList.add('tuckate');
-
       const azioni = document.createElement('div');
       azioni.classList.add('azioni-carta');
 
       const bottoneScarta = document.createElement('button');
       bottoneScarta.innerText = 'Scarta';
-      bottoneScarta.onclick = () => scartaCarta(cartaContainer);
+      bottoneScarta.onclick = () => scartaCarta(container);
 
       const bottoneRuota = document.createElement('button');
       bottoneRuota.innerText = 'Ruota';
@@ -235,17 +240,17 @@
 
       const bottoneTuck = document.createElement('button');
       bottoneTuck.innerText = 'Storing';
-      bottoneTuck.onclick = () => tuckCarte(cartaContainer);
+      bottoneTuck.onclick = () => tuckCarte(container);
 
       azioni.appendChild(bottoneScarta);
       azioni.appendChild(bottoneRuota);
       azioni.appendChild(bottoneTuck);
 
-      cartaContainer.appendChild(carta);
-      cartaContainer.appendChild(tuckate);
-      cartaContainer.appendChild(azioni);
+      container.appendChild(tuckateContainer);
+      container.appendChild(carta);
+      container.appendChild(azioni);
 
-      area.appendChild(cartaContainer);
+      area.appendChild(container);
     }
 
     function toggleSelezione(carta) {
@@ -269,15 +274,20 @@
     }
 
     function tuckCarte(containerTarget) {
-      const tuckateContainer = containerTarget.querySelector('.tuckate');
+      const tuckateContainer = containerTarget.querySelector('.tuckate-container');
       const carteSelezionate = document.querySelectorAll('.selezionata');
+
+      let offset = -30;
 
       carteSelezionate.forEach(carta => {
         const parent = carta.closest('.carta-container');
         const clone = carta.cloneNode(true);
         clone.classList.remove('selezionata');
+        clone.classList.add('tuckata');
+        clone.style.top = `${offset}px`;
         clone.style.transform = `rotate(${carta.dataset.rotazione}deg)`;
         tuckateContainer.appendChild(clone);
+        offset -= 30;
         parent.remove();
       });
     }
