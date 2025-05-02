@@ -10,38 +10,26 @@ function muoviCursor(id, dir) {
   document.getElementById(id).style.transform = `translateX(${position[id] * 50}px)`;
 }
 
-// Dati mazzi
 let mazzo = [];
 let scarti = [];
 let minacce = [];
 
-// Inizializzazione carte (fronte/retro)
 for (let i = 0; i <= 9; i++) {
   const num = i.toString().padStart(2, '0');
-  mazzo.push({
-    fronte: `carte/${num}.png`,
-    retro: `carte_retro/${num}.png`,
-    stato: 'fronte',
-    rotazione: 0
-  });
+  mazzo.push({ fronte: `carte/${num}.png`, retro: `carte_retro/${num}.png`, stato: 'fronte', rotazione: 0 });
 }
 for (let i = 10; i <= 14; i++) {
   const num = i.toString();
-  minacce.push({
-    fronte: `carte/${num}.png`,
-    retro: `carte_retro/${num}.png`,
-    stato: 'fronte',
-    rotazione: 0
-  });
+  minacce.push({ fronte: `carte/${num}.png`, retro: `carte_retro/${num}.png`, stato: 'fronte', rotazione: 0 });
 }
 
-// Mischiamo all'inizio
 mischiaArray(mazzo);
 mischiaArray(minacce);
 
-// Gestione Drag&Drop
 function dragStartHandler(ev) {
-  ev.dataTransfer.setData("text/plain", ev.target.parentElement.id);
+  const container = ev.target.parentElement;
+  container.classList.add('dragging');
+  ev.dataTransfer.setData("text/plain", container.id);
 }
 
 function dragOverHandler(ev) {
@@ -53,11 +41,11 @@ function dropHandler(ev) {
   const id = ev.dataTransfer.getData("text/plain");
   const elemento = document.getElementById(id);
   if (elemento) {
+    elemento.classList.remove('dragging');
     ev.target.appendChild(elemento);
   }
 }
 
-// Pesca carta
 let cartaId = 0;
 function pescaCarta() {
   if (mazzo.length === 0) return;
@@ -65,7 +53,6 @@ function pescaCarta() {
   aggiornaMazzi();
 }
 
-// Crea carta nell'area di gioco
 function creaCartaInArea(area, cartaData) {
   const container = document.createElement('div');
   container.classList.add('carta-container');
@@ -109,7 +96,6 @@ function creaCartaInArea(area, cartaData) {
   area.appendChild(container);
 }
 
-// Ruota carta
 function ruotaCarta(carta) {
   let rot = parseInt(carta.dataset.rotazione) || 0;
   rot = (rot + 180) % 360;
@@ -117,7 +103,6 @@ function ruotaCarta(carta) {
   carta.style.transform = `rotate(${rot}deg)`;
 }
 
-// Gira carta fronte/retro
 function giraCarta(carta) {
   const stato = carta.dataset.stato;
   if (stato === 'fronte') {
@@ -130,7 +115,6 @@ function giraCarta(carta) {
   carta.style.transform = `rotate(${carta.dataset.rotazione}deg)`;
 }
 
-// Copia stato carta dal DOM
 function copiaCarta(carta) {
   return {
     fronte: carta.dataset.fronte,
@@ -140,16 +124,15 @@ function copiaCarta(carta) {
   };
 }
 
-// Scarta carta e tuckate
 function scartaCarta(container) {
   container.querySelectorAll('img').forEach(carta => {
-    scarti.push(copiaCarta(carta));
+    const cardData = copiaCarta(carta);
+    scarti.push(cardData);
   });
   container.remove();
   aggiornaMazzi();
 }
 
-// Tuck carte selezionate
 function tuckCarte(containerTarget) {
   const selezionate = document.querySelectorAll('.selezionata');
   const tuckateEsistenti = containerTarget.querySelectorAll('.tuckata').length;
@@ -171,7 +154,6 @@ function tuckCarte(containerTarget) {
   });
 }
 
-// Mischia array
 function mischiaArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -179,13 +161,11 @@ function mischiaArray(array) {
   }
 }
 
-// Operazioni sui mazzi
 function mischiaMazzo() { mischiaArray(mazzo); aggiornaMazzi(); }
 function mischiaMinacce() { mischiaArray(minacce); aggiornaMazzi(); }
 function ripristinaScarti() { mazzo = [...mazzo, ...scarti]; scarti = []; aggiornaMazzi(); }
 function aggiungiMinaccia() { if (minacce.length) scarti.push(minacce.shift()); aggiornaMazzi(); }
 
-// Aggiorna mazzi
 function aggiornaMazzi() {
   aggiornaMazzoSingolo('mazzo-container', mazzo, 'counter-mazzo');
   aggiornaMazzoSingolo('scarti-container', scarti, 'counter-scarti');
@@ -204,5 +184,4 @@ function aggiornaMazzoSingolo(id, array, counterId) {
   document.getElementById(counterId).innerText = array.length;
 }
 
-// Avvio
 aggiornaMazzi();
