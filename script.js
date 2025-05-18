@@ -14,7 +14,7 @@ let mazzo = [];
 let scarti = [];
 let minacce = [];
 
-for (let i = 1; i <= 12; i++) {
+for (let i = 13; i <= 24; i++) {
   const num = 0;
   mazzo.push({ fronte: `carte2/Risorsa ${i.toString()}.png`, retro: `carte_retro/${num}.png`, stato: 'fronte', rotazione: 0 });
 }
